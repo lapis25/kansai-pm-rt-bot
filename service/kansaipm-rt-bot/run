@@ -3,5 +3,7 @@
 exec 2>&1
 exec \
   setuidgid lapis25 \
-  /home/lapis25/perl5/perlbrew/perls/perl-5.12.2/bin/perl /home/lapis25/app/kansaipm-rt-bot/bin/kansaipm-rt-bot.pl
+  /home/lapis25/perl5/perlbrew/perls/perl-5.12.2/bin/perl /home/lapis25/app/kansaipm-rt-bot/bin/kansaipm-rt-bot.pl \
+   2>&1
+
 
