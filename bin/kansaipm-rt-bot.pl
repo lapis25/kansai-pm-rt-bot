@@ -27,13 +27,17 @@ my $streamer = AnyEvent::Twitter::Stream->new(
     track => $track,
     on_tweet => sub {
         my $tweet = shift;
-        print "$tweet->{created_at},$tweet->{user}{screen_name}: $tweet->{text} [$tweet->{id}]\n";
-        $twitty->request(
-            api    => "statuses/retweet/$tweet->{id}",
-            method => 'POST',
-            sub {
-            },
-        );
+        if( $tweet->{user}{screen_name} ne 'kansaipm'
+        and $tweet->{user}{screen_name} ne 'perlism'
+        ) {
+            print "$tweet->{user}{screen_name}: $tweet->{text} [$tweet->{id}]\n";
+            $twitty->request(
+                api    => "statuses/retweet/$tweet->{id}",
+                method => 'POST',
+                sub {
+                },
+            );
+        }
     },
     on_error => sub {
         my $error = shift;
