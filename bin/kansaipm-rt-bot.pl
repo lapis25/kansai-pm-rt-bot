@@ -18,6 +18,8 @@ my $config = pit_get('twitter.kansai.pm', require => {
     token_secret    => 'token secret',
 });
 
+warn "start tracking '$track'\n";
+
 my $cv = AnyEvent->condvar;
 
 my $twitty = AnyEvent::Twitter->new(%$config);
@@ -25,12 +27,13 @@ my $streamer = AnyEvent::Twitter::Stream->new(
     %$config,
     method => 'filter',
     track => $track,
+    timeout => 45,
     on_tweet => sub {
         my $tweet = shift;
         if( $tweet->{user}{screen_name} ne 'kansaipm'
         and $tweet->{user}{screen_name} ne 'perlism'
         ) {
-            print "$tweet->{user}{screen_name}: $tweet->{text} [$tweet->{id}]\n";
+            warn "$tweet->{user}{screen_name}: $tweet->{text} [$tweet->{id}]\n";
             $twitty->request(
                 api    => "statuses/retweet/$tweet->{id}",
                 method => 'POST',
@@ -44,9 +47,14 @@ my $streamer = AnyEvent::Twitter::Stream->new(
         warn "ERROR: $error";
         $cv->send;
     },
+    on_keepalive => sub {
+        #warn "ping\n";
+    },
     on_eof   => sub {
+        warn "eof\n";
         $cv->send;
     },
 );
 
 $cv->recv;
+
